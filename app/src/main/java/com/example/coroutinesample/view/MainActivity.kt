@@ -10,9 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.coroutinesample.R
 import com.example.coroutinesample.databinding.ActivityMainBinding
+import com.example.coroutinesample.utils.launchWhenStarted
 import com.example.coroutinesample.vm.UniversitiesViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.forEach
+import kotlinx.coroutines.flow.onEach
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private val binding: ActivityMainBinding by viewBinding(ActivityMainBinding::bind)
@@ -45,19 +48,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             viewModel.university.collect {
                 showView(binding.rvList, true)
                 if (!it.name.isNullOrBlank()) {
-                    Log.e("TEST", it.name ?: "null")
                     universitiseAdapter.updateDataSet(it)
-                    myLayoutManager.scrollToPosition(universitiseAdapter.itemCount)
+                    binding.rvList.smoothScrollToPosition(universitiseAdapter.itemCount)
                 }
             }
         }
 
         //подписка на отображение лоадера
-        lifecycleScope.launchWhenStarted {
-            viewModel.loading.collect {
-                showView(binding.pbProgress, it)
-            }
-        }
+        viewModel.loading.onEach {
+            showView(binding.pbProgress, it)
+        }.launchWhenStarted(lifecycleScope)
 
         //подписка на отображение снека с ошибкой
         lifecycleScope.launchWhenStarted {

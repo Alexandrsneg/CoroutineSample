@@ -11,13 +11,13 @@ class UniversitiesViewModel : ViewModel() {
     private var cachedUniversities = arrayListOf<University>()
     var job: Job? = null
     val university: StateFlow<University>
-        get() = _university
+        get() = _university.asStateFlow()
 
     val loadError: StateFlow<String>
-        get() = _loadError
+        get() = _loadError.asStateFlow()
 
     val loading: StateFlow<Boolean>
-        get() = _loading
+        get() = _loading.asStateFlow()
 
     private val _university = MutableStateFlow(University(""))
     private val _loadError = MutableStateFlow("")
